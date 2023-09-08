@@ -10,13 +10,13 @@ urlToNodeMap.set("root", urlNode);
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 	//this url is child of the root
-	console.log(urlNode)
+	console.log(urlNode, currentUrl, details.url)
 	const rootNode = urlToNodeMap.get(currentUrl);
 	const currentNode = urlToNodeMap.has(details.url)
 		? urlToNodeMap.get(details.url)
-		: { url: details.url, children: [], parent: rootNode.url};
-	if (currentNode.url !== rootNode.parent) {
-
+		: { url: details.url, children: []};
+	if (currentNode.url !== rootNode.parent && rootNode.url !== currentNode.url) {
+		currentNode.parent = rootNode.url
 		rootNode.children.push(currentNode);
 	}
 	currentUrl = details.url;

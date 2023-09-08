@@ -1,6 +1,6 @@
 const nodeToCoords = new Map();
 
-const scale = d3.scaleLinear([0, 1], [10, 400]);
+const scale = d3.scaleLinear([0, 1], [10, 100]);
 const line = d3.line();
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -34,7 +34,7 @@ function processNode(node) {
 
 function renderNode(node, parentCoords, container) {
 	const xCoord = Math.floor(scale(Math.random()));
-	const yCoord = parentCoords ? parentCoords.y + 100 : 20;
+	const yCoord = parentCoords ? parentCoords.y + 20 : 20;
 
 	if (!nodeToCoords.has(node.url)) {
 		nodeToCoords.set(node.url, { x: xCoord, y: yCoord });
@@ -44,18 +44,18 @@ function renderNode(node, parentCoords, container) {
 	container.append("circle")
 		.attr("cx", coords.x)
 		.attr("cy", coords.y)
-		.attr("r", 20)
+		.attr("r", 5)
 		.attr("fill", "white")
 
 		container.append("text")
-		.attr("x", coords.x + 22)
-		.attr("y", coords.y)
+		.attr("x", coords.x)
+		.attr("y", coords.y + 22)
 		.attr("fill","white")
 		.text(node.url);
 	if (parentCoords) {
 		container.append("path")
 			.attr("fill", "none")
-			.attr("strokeWidth", 2)
+			.attr("strokeWidth", 3)
 			.attr("stroke", "white")
 			.attr(
 				"d",
