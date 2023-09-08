@@ -1,7 +1,9 @@
 const nodeToCoords = new Map();
 
-const scale = d3.scaleLinear([0, 1], [10, 100]);
+const scale = d3.scaleLinear([0, 1], [100, 600]);
 const line = d3.line();
+const circles =[]
+ const paths = []
 
 document.addEventListener("DOMContentLoaded", async () => {
     let data = await new Promise((resolve, reject) => {
@@ -13,24 +15,25 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
     });
-	const container = d3.select("#svg")
+	const svg = d3.select("#svg")
 
     const urlNode = JSON.parse(data.urlNode);
-	console.log(urlNode)
-	renderNode(urlNode, undefined, container)
+	
+	renderNode(urlNode, undefined, svg)
 
-	// 	console.log(svg)
-		// container.node().append(svg.node())
+	const circleElems = svg.selectAll("circle").data(circles).join("circle").attr("transform", d => `translate(${d})`).attr("r", 5).attr("fill", "red")
+  	const pathElems = svg.selectAll("path").data(paths).join("path").attr("d", (d) => line(d)).attr("strokeWidth", 3).attr("stroke", "white")
+	function zoomed({transform}) {
+	circleElems.attr("r", 5*transform.k).attr("transform", (d) => `translate(${transform.apply(d)})`)
+	pathElems.attr("transform", transform)
+	}
+
+ 	svg.call(d3.zoom().on("zoom", zoomed))
+
+
 });
 
-function processNode(node) {
-	if (!node.children) return node;
-	for (let child of node.children) {
-		child.parent = node;
-		processNode(child);
-	}
-	return node;
-}
+
 
 function renderNode(node, parentCoords, container) {
 	const xCoord = Math.floor(scale(Math.random()));
@@ -41,29 +44,31 @@ function renderNode(node, parentCoords, container) {
 	}
 	const coords = nodeToCoords.get(node.url);
 
-	container.append("circle")
-		.attr("cx", coords.x)
-		.attr("cy", coords.y)
-		.attr("r", 5)
-		.attr("fill", "white")
+	circles.push([coords.x, coords.y])
+	// container.append("circle")
+	// 	.attr("cx", coords.x)
+	// 	.attr("cy", coords.y)
+	// 	.attr("r", 5)
+	// 	.attr("fill", "cornflowerblue")
 
-		container.append("text")
-		.attr("x", coords.x)
-		.attr("y", coords.y + 22)
-		.attr("fill","white")
-		.text(node.url);
+		// container.append("text")
+		// .attr("x", coords.x)
+		// .attr("y", coords.y + 22)
+		// .attr("fill","white")
+		// .text(node.url);
 	if (parentCoords) {
-		container.append("path")
-			.attr("fill", "none")
-			.attr("strokeWidth", 3)
-			.attr("stroke", "white")
-			.attr(
-				"d",
-				line([
-					[coords.x, coords.y],
-					[parentCoords.x, parentCoords.y],
-				])
-			);
+		// container.append("path")
+		// 	.attr("fill", "none")
+		// 	.attr("strokeWidth", 3)
+		// 	.attr("stroke", "turquoise")
+		// 	.attr(
+		// 		"d",
+		// 		line([
+		// 			[coords.x, coords.y],
+		// 			[parentCoords.x, parentCoords.y],
+		// 		])
+		// 	);
+			paths.push([[coords.x,coords.y], [parentCoords.x, parentCoords.y]])
 	}
 
 
