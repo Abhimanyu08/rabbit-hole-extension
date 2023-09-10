@@ -7,15 +7,12 @@
 		"service_worker": "background.js"
 	},
 	"action": {
-		"default_popup": "hello.html",
+		"default_popup": "popup.html",
 		"default_icon": "smol-rabbit.png"
 	},
+	"chrome_url_overrides": {
+		"history": "history.html"
+	},
 	"permissions": ["webNavigation", "tabs", "storage", "scripting"],
-	"host_permissions": ["*://*/*"],
-	"content_scripts": [
-		{
-			"matches": ["<all_urls>"],
-			"js": ["contentScript.js"]
-		}
-	]
+	"host_permissions": ["*://*/*"]
 }
