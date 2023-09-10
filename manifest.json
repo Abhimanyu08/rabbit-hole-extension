@@ -1,16 +1,16 @@
 {
 	"manifest_version": 3,
-	"name": "Hello Extensions",
-	"description": "Base Level Extension",
+	"name": "Rabbit Hole",
+	"description": "The path trailed by you, the rabbit",
 	"version": "1.0",
 	"background": {
 		"service_worker": "background.js"
 	},
 	"action": {
 		"default_popup": "hello.html",
-		"default_icon": "hello_extensions.png"
+		"default_icon": "smol-rabbit.png"
 	},
-	"permissions": ["webNavigation", "tabs", "storage","scripting"],
+	"permissions": ["webNavigation", "tabs", "storage", "scripting"],
 	"host_permissions": ["*://*/*"],
 	"content_scripts": [
 		{
