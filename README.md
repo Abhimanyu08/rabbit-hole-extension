@@ -1,4 +1,4 @@
-![](rabbit.jpg)
+![](smol-rabbit.png)
 
 1. Clone this repo using
    `git clone https://github.com/Abhimanyu08/rabbit-hole-extension.git`.
