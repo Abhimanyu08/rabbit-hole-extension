@@ -6,6 +6,17 @@ const traversalArray = [];
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 	//this url is child of the root
 	// updateGraph(details.url);
+
+	if (!details.url) return;
+
+	if (details.url.includes("google.com/uviewer")) {
+		return;
+	}
+	if (details.url.startsWith("chrome://newTab")) {
+		currentUrl = details.url + `${Date.now()}`;
+		return;
+	}
+	currentUrl = details.url;
 });
 
 // Listen for changes in the active tab.
@@ -29,15 +40,22 @@ chrome.tabs.onCreated.addListener(function (tab) {
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 	// Check if the URL changes to a "chrome://" URL (new tab page)
-	if (changeInfo.url && changeInfo.url.startsWith("chrome://")) {
+
+	if (!changeInfo.url) return;
+	if (changeInfo.url.includes("google.com/uviewer")) {
+		return;
+	}
+	if (changeInfo.url.startsWith("chrome://newtab")) {
+		currentUrl = changeInfo.url + `${Date.now()}`;
+		return;
+	}
+	if (changeInfo.url.startsWith("chrome://")) {
 		// This tab is likely a new tab page
 		// updateGraph(changeInfo.url);
 		return;
 	}
 
-	if (changeInfo.url) {
-		updateGraph(changeInfo.url);
-	}
+	updateGraph(changeInfo.url);
 });
 
 function updateGraph(url) {
