@@ -1,25 +1,11 @@
 let currentUrl = "root";
-let urlToNodeMap = new Map();
-let urlNode = {
-	url: "root",
-	children: [],
-	parent: null,
-};
 
-urlToNodeMap.set("root", urlNode);
-
-// chrome.runtime.onMessage.addListener((message) => {
-// 	console.log(message);
-// 	if (message === "start-digging") {
-// 		startDigging = true;
-// 		return;
-// 	}
-// 	startDigging = false;
-// });
+const traversalArray = [];
+// instead of a graph data structure, we should have an array of {from: url, to: url}
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 	//this url is child of the root
-	updateGraph(details.url);
+	// updateGraph(details.url);
 });
 
 // Listen for changes in the active tab.
@@ -27,9 +13,9 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 	// Use the chrome.tabs.get method to retrieve information about the active tab.
 	chrome.tabs.get(tabId, (tab) => {
 		// Check if the tab's URL starts with "chrome://newtab/".
-		// if (tab.url && !tab.url.startsWith("chrome://newtab")) {
-		// 	currentUrl = tab.url;
-		// }
+		if (tab.url && !tab.url.startsWith("chrome://newtab")) {
+			currentUrl = tab.url;
+		}
 	});
 });
 
@@ -57,37 +43,15 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 function updateGraph(url) {
 	chrome.storage.session.get("startDigging", function (data) {
 		if (!data.startDigging) return;
-		const rootNode = urlToNodeMap.has(currentUrl)
-			? urlToNodeMap.get(currentUrl)
-			: {
-					url,
-					children: [],
-					parent: null,
-			  };
-		const currentNode = urlToNodeMap.has(url)
-			? urlToNodeMap.get(url)
-			: { url, children: [] };
-		if (
-			currentNode.url !== rootNode.parent &&
-			rootNode.url !== currentNode.url
-		) {
-			currentNode.parent = rootNode.url;
-			rootNode.children.push(currentNode);
-		}
+		if (url === currentUrl) return;
+		traversalArray.push({ from: currentUrl || "root", to: url });
 		currentUrl = url;
-		urlToNodeMap.set(currentUrl, currentNode);
-		chrome.storage.local.set({ urlNode: JSON.stringify(urlNode) });
+		chrome.storage.local.set({
+			traversalArray: JSON.stringify(traversalArray),
+		});
 	});
 }
 
 function reset() {
-	currentUrl = "root";
-	urlToNodeMap.clear();
-	urlNode = {
-		url: "root",
-		children: [],
-		parent: null,
-	};
-	urlToNodeMap.set("root", urlNode);
 	chrome.storage.local.clear();
 }

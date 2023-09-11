@@ -1,8 +1,8 @@
 const urlToNode = new Map();
 
 const scale = d3.scaleLinear([0, 1], [100, 600]);
-const transformScale = [1, 3];
-const opacityScale = d3.scaleLinear(transformScale, [0, 0.5]);
+const transformScale = [1, 10];
+const opacityScale = d3.scaleLinear(transformScale, [0.2, 1]);
 const line = d3.line();
 const circles = [];
 const paths = [];
@@ -10,7 +10,7 @@ const urls = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
 	let data = await new Promise((resolve, reject) => {
-		chrome.storage.local.get("urlNode", (result) => {
+		chrome.storage.local.get("traversalArray", (result) => {
 			if (chrome.runtime.lastError) {
 				reject(chrome.runtime.lastError);
 			} else {
@@ -20,9 +20,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 	});
 	const svg = d3.select("#svg");
 
-	const urlNode = JSON.parse(data.urlNode);
+	const traversalArray = JSON.parse(data.traversalArray);
 
-	renderNode(urlNode, svg);
+	renderNode(traversalArray);
 
 	const pathElems = preparePaths(svg);
 	const circleElems = prepareNodes(svg);
@@ -110,25 +110,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-function renderNode(node, container) {
-	if (!urlToNode.has(node.url)) {
-		const urlNode = { url: node.url, x: 300, y: 300, id: node.url };
-		urlToNode.set(node.url, urlNode);
-		circles.push(urlNode);
-	}
+function renderNode(traversalArray) {
+	for (let { from, to } of traversalArray) {
+		console.log(from, to);
+		if (!urlToNode.has(from)) {
+			const urlNode = { url: from, x: 300, y: 300, id: from };
+			urlToNode.set(from, urlNode);
+			circles.push(urlNode);
+		}
+		if (!urlToNode.has(to)) {
+			const urlNode = { url: to, x: 300, y: 300, id: to };
+			urlToNode.set(to, urlNode);
+			circles.push(urlNode);
+		}
 
-	if (node.parent) {
 		paths.push({
-			source: node.parent,
-			target: node.url,
-			id: node.url,
+			source: from,
+			target: to,
+			// id: from,
 		});
-	}
 
-	if (node.children) {
-		node.children.map((child) => {
-			renderNode(child, container);
-		});
+		// if (node.children) {
+		// 	node.children.map((child) => {
+		// 		renderNode(child );
+		// 	});
+		// }
 	}
 }
 
