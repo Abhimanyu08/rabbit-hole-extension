@@ -74,10 +74,10 @@ function prepareGraph(container, traversalArray, timeStamp) {
 	const [circles, paths] = renderNode(traversalArray);
 
 	const pathElems = preparePaths(svg, paths);
-	const circleElems = prepareNodes(svg, circles);
-	const labels = prepareLabels(svg, circles);
+	const [nodeAndLabels, circleElems, labels] = prepareNodes(svg, circles);
+	// const labels = prepareLabels(svg, circles);
 
-	circleElems
+	nodeAndLabels
 		.on("click", function (_, d) {
 			const url = d.url;
 			chrome.tabs.create({ url });
@@ -128,7 +128,7 @@ function prepareGraph(container, traversalArray, timeStamp) {
 			.attr("y2", (d) => d.target.y);
 
 		circleElems.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
-		labels.attr("x", (d) => d.x).attr("y", (d) => d.y + 10);
+		labels.attr("x", (d) => d.x - 20).attr("y", (d) => d.y + 10);
 		// pathElems.attr("d", (d) => line(d))
 	});
 	circleElems.call(
@@ -184,14 +184,25 @@ function prepareLabels(svg, circles) {
 }
 
 function prepareNodes(svg, circles) {
-	const circleElems = svg
-		.selectAll("circle")
+	const labelAndNodeG = svg
+		.selectAll("g")
 		.data(circles)
-		.join("circle")
+		.join("g")
+		.attr("id", "nodewithlabel");
+
+	const labels = labelAndNodeG
+		.append("text")
+		.attr("fill", "white")
+		.text((d) => d.url)
+		.style("opacity", 0)
+		.style("font-size", "5px")
+		.style("font-weight", "400");
+	const circleElems = labelAndNodeG
+		.append("circle")
 		.attr("r", 5)
 		.attr("fill", "cornflowerblue");
 
-	return circleElems;
+	return [labelAndNodeG, circleElems, labels];
 }
 
 function formatTimestamp(timestamp) {
