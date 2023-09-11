@@ -1,6 +1,6 @@
 let currentUrl = "root";
-
-const traversalArray = [];
+let currentSessionKey = "";
+let traversalArray = [];
 // instead of a graph data structure, we should have an array of {from: url, to: url}
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
@@ -60,12 +60,18 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
 function updateGraph(url) {
 	chrome.storage.session.get("startDigging", function (data) {
-		if (!data.startDigging) return;
+		if (!data.startDigging) {
+			traversalArray = [];
+			return;
+		}
 		if (url === currentUrl) return;
+		if (traversalArray.length === 0) {
+			currentSessionKey = "traversal-" + Date.now().toString();
+		}
 		traversalArray.push({ from: currentUrl || "root", to: url });
 		currentUrl = url;
 		chrome.storage.local.set({
-			traversalArray: JSON.stringify(traversalArray),
+			[currentSessionKey]: JSON.stringify(traversalArray),
 		});
 	});
 }

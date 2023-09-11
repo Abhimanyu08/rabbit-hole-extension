@@ -1,0 +1,32 @@
+* {
+	margin: 0;
+	box-sizing: border-box;
+}
+
+#container {
+	background-color: black;
+	min-height: 100vh;
+	display: grid;
+	width: 100vw;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#container > div {
+	height: 400px;
+	grid-column: span 1 / span 1;
+}
+
+#container > div + div,
+#container > div:first-child {
+	border-color: white;
+	border-style: solid;
+	border-right-width: 1px;
+	border-left-width: 0px;
+	border-top: 0;
+	border-bottom-width: 1px;
+}
+
+#container svg {
+	width: 100%;
+	height: 100%;
+}

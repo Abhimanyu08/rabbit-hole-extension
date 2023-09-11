@@ -1,16 +1,12 @@
-const urlToNode = new Map();
-
 const scale = d3.scaleLinear([0, 1], [100, 600]);
 const transformScale = [1, 10];
 const opacityScale = d3.scaleLinear(transformScale, [0.2, 1]);
 const line = d3.line();
-const circles = [];
-const paths = [];
 const urls = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
 	let data = await new Promise((resolve, reject) => {
-		chrome.storage.local.get("traversalArray", (result) => {
+		chrome.storage.local.get(null, (result) => {
 			if (chrome.runtime.lastError) {
 				reject(chrome.runtime.lastError);
 			} else {
@@ -18,15 +14,57 @@ document.addEventListener("DOMContentLoaded", async () => {
 			}
 		});
 	});
-	const svg = d3.select("#svg");
+	console.log(data);
 
-	const traversalArray = JSON.parse(data.traversalArray);
+	const container = d3.select("#container");
+	for (let [key, val] of Object.entries(data)) {
+		if (/traversal-(\d+)/.test(key)) {
+			const traversalArray = JSON.parse(val);
+			prepareGraph(container, traversalArray);
+		}
+	}
+});
 
-	renderNode(traversalArray);
+function renderNode(traversalArray) {
+	const circles = [];
+	const paths = [];
 
-	const pathElems = preparePaths(svg);
-	const circleElems = prepareNodes(svg);
-	const labels = prepareLabels(svg);
+	const urlToNode = new Map();
+	for (let { from, to } of traversalArray) {
+		console.log(from, to);
+		if (!urlToNode.has(from)) {
+			const urlNode = { url: from, x: 300, y: 300, id: from };
+			urlToNode.set(from, urlNode);
+			circles.push(urlNode);
+		}
+		if (!urlToNode.has(to)) {
+			const urlNode = { url: to, x: 300, y: 300, id: to };
+			urlToNode.set(to, urlNode);
+			circles.push(urlNode);
+		}
+
+		paths.push({
+			source: from,
+			target: to,
+			// id: from,
+		});
+
+		// if (node.children) {
+		// 	node.children.map((child) => {
+		// 		renderNode(child );
+		// 	});
+		// }
+	}
+	return [circles, paths];
+}
+
+function prepareGraph(container, traversalArray) {
+	const svg = container.append("div").append("svg");
+	const [circles, paths] = renderNode(traversalArray);
+
+	const pathElems = preparePaths(svg, paths);
+	const circleElems = prepareNodes(svg, circles);
+	const labels = prepareLabels(svg, circles);
 
 	circleElems
 		.on("click", function (_, d) {
@@ -108,37 +146,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 		event.subject.fx = null;
 		event.subject.fy = null;
 	}
-});
-
-function renderNode(traversalArray) {
-	for (let { from, to } of traversalArray) {
-		console.log(from, to);
-		if (!urlToNode.has(from)) {
-			const urlNode = { url: from, x: 300, y: 300, id: from };
-			urlToNode.set(from, urlNode);
-			circles.push(urlNode);
-		}
-		if (!urlToNode.has(to)) {
-			const urlNode = { url: to, x: 300, y: 300, id: to };
-			urlToNode.set(to, urlNode);
-			circles.push(urlNode);
-		}
-
-		paths.push({
-			source: from,
-			target: to,
-			// id: from,
-		});
-
-		// if (node.children) {
-		// 	node.children.map((child) => {
-		// 		renderNode(child );
-		// 	});
-		// }
-	}
 }
 
-function preparePaths(svg) {
+function preparePaths(svg, paths) {
 	const pathElems = svg
 		.selectAll("line")
 		.data(paths)
@@ -148,7 +158,7 @@ function preparePaths(svg) {
 	return pathElems;
 }
 
-function prepareLabels(svg) {
+function prepareLabels(svg, circles) {
 	const labels = svg
 		.append("g")
 		.selectAll("text")
@@ -162,7 +172,7 @@ function prepareLabels(svg) {
 	return labels;
 }
 
-function prepareNodes(svg) {
+function prepareNodes(svg, circles) {
 	const circleElems = svg
 		.selectAll("circle")
 		.data(circles)
