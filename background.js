@@ -16,7 +16,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 		currentUrl = details.url + `${Date.now()}`;
 		return;
 	}
-	currentUrl = details.url;
+	updateGraph(details.url);
 });
 
 // Listen for changes in the active tab.
@@ -61,6 +61,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 function updateGraph(url) {
 	chrome.storage.session.get("startDigging", function (data) {
 		if (!data.startDigging) {
+			currentUrl = "root";
 			traversalArray = [];
 			return;
 		}
