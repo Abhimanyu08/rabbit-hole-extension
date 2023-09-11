@@ -1,4 +1,4 @@
-const nodeToCoords = new Map();
+const urlToNode = new Map();
 
 const scale = d3.scaleLinear([0, 1], [100, 600]);
 const transformScale = [1, 3];
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const urlNode = JSON.parse(data.urlNode);
 
-	renderNode(urlNode, 0, undefined, svg);
+	renderNode(urlNode, svg);
 
 	const pathElems = preparePaths(svg);
 	const circleElems = prepareNodes(svg);
@@ -60,7 +60,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const simulation = d3
 		.forceSimulation(circles)
-		.force("link", d3.forceLink(paths))
+		.force(
+			"link",
+			d3.forceLink(paths).id((d) => d.id)
+		)
 		.force("x", d3.forceX(200))
 		.force("y", d3.forceY(200))
 		.force("collide", d3.forceCollide(20))
@@ -107,33 +110,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-function renderNode(node, parentIndex, parentCoords, container) {
-	const xCoord = Math.floor(scale(Math.random()));
-	const yCoord = parentCoords ? parentCoords.y + 20 : 20;
-
-	if (!nodeToCoords.has(node.url)) {
-		nodeToCoords.set(node.url, { x: xCoord, y: yCoord });
+function renderNode(node, container) {
+	if (!urlToNode.has(node.url)) {
+		const urlNode = { url: node.url, x: 300, y: 300, id: node.url };
+		urlToNode.set(node.url, urlNode);
+		circles.push(urlNode);
 	}
-	const coords = nodeToCoords.get(node.url);
 
-	circles.push({ ...coords, url: node.url });
-	urls.push(node.url);
-	if (parentCoords) {
+	if (node.parent) {
 		paths.push({
-			source: parentIndex,
-			target: circles.length - 1,
-			url: node.url,
+			source: node.parent,
+			target: node.url,
+			id: node.url,
 		});
 	}
 
 	if (node.children) {
 		node.children.map((child) => {
-			renderNode(
-				child,
-				circles.length - 1,
-				{ x: coords.x, y: coords.y },
-				container
-			);
+			renderNode(child, container);
 		});
 	}
 }
@@ -155,7 +149,7 @@ function prepareLabels(svg) {
 		.data(circles)
 		.join("text")
 		.attr("fill", "white")
-		.text((_, i) => urls[i])
+		.text((d) => d.url)
 		.style("opacity", 0)
 		.style("font-size", "5px")
 		.style("font-weight", "400");

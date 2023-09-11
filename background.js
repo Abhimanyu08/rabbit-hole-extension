@@ -57,7 +57,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 function updateGraph(url) {
 	chrome.storage.session.get("startDigging", function (data) {
 		if (!data.startDigging) return;
-		console.log(urlNode);
 		const rootNode = urlToNodeMap.has(currentUrl)
 			? urlToNodeMap.get(currentUrl)
 			: {
