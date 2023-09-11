@@ -17,10 +17,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 	console.log(data);
 
 	const container = d3.select("#container");
+
 	for (let [key, val] of Object.entries(data)) {
-		if (/traversal-(\d+)/.test(key)) {
+		const keyRegex = /traversal-(\d+)/;
+		if (keyRegex.test(key)) {
+			const timeStamp = keyRegex.exec(key)[1];
 			const traversalArray = JSON.parse(val);
-			prepareGraph(container, traversalArray);
+			prepareGraph(container, traversalArray, timeStamp);
 		}
 	}
 });
@@ -58,8 +61,16 @@ function renderNode(traversalArray) {
 	return [circles, paths];
 }
 
-function prepareGraph(container, traversalArray) {
-	const svg = container.append("div").append("svg");
+function prepareGraph(container, traversalArray, timeStamp) {
+	const div = container.append("div");
+
+	div.append("div").attr("class", "info").text(formatTimestamp(timeStamp));
+
+	const svg = div.append("svg");
+	const svgElement = svg.node();
+	const svgWidth = svgElement.clientWidth;
+	const svgHeight = svgElement.clientHeight;
+
 	const [circles, paths] = renderNode(traversalArray);
 
 	const pathElems = preparePaths(svg, paths);
@@ -102,10 +113,10 @@ function prepareGraph(container, traversalArray) {
 			"link",
 			d3.forceLink(paths).id((d) => d.id)
 		)
-		.force("x", d3.forceX(200))
-		.force("y", d3.forceY(200))
+		.force("x", d3.forceX(svgWidth / 2))
+		.force("y", d3.forceY(svgHeight / 2))
 		.force("collide", d3.forceCollide(20))
-		.force("center", d3.forceCenter(700 / 2, 500 / 2));
+		.force("center", d3.forceCenter(svgWidth / 2, svgHeight / 2));
 
 	svg.call(d3.zoom().scaleExtent(transformScale).on("zoom", zoomed));
 
@@ -182,3 +193,45 @@ function prepareNodes(svg, circles) {
 
 	return circleElems;
 }
+
+function formatTimestamp(timestamp) {
+	const date = new Date(parseInt(timestamp));
+
+	// Define arrays for day names, month names, and AM/PM
+
+	const months = [
+		"Jan",
+		"Feb",
+		"Mar",
+		"Apr",
+		"May",
+		"Jun",
+		"Jul",
+		"Aug",
+		"Sep",
+		"Oct",
+		"Nov",
+		"Dec",
+	];
+
+	// Get the components of the date
+	const dayOfMonth = date.getDate();
+	const month = months[date.getMonth()];
+	const year = date.getFullYear().toString().slice(-2);
+	const hours = date.getHours();
+	const minutes = date.getMinutes();
+	const amOrPm = hours >= 12 ? "pm" : "am";
+
+	// Convert hours from 24-hour format to 12-hour format
+	const formattedHours = hours % 12 || 12;
+
+	// Pad single-digit minutes with a leading zero
+	const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+	// Construct the formatted date string
+	const formattedDate = `${dayOfMonth} ${month}, ${year} @${formattedHours}:${formattedMinutes}${amOrPm}`;
+
+	return formattedDate;
+}
+
+// Example usage:
