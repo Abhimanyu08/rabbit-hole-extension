@@ -64,7 +64,28 @@ function addTimeStampDiv(container, timeStamp) {
 
 function addOptionsDiv(container, timeStamp) {
 	const options = container.append("div").attr("class", "options");
-	options.append("button").text("Expand");
+
+	const refreshNode = container
+		.append("div")
+		.attr("class", "options")
+		.style("display", "none")
+		.style("padding", "10px")
+		.style("z-index", "100")
+		.style("background-color", "black")
+		.text("Refresh to minimize");
+	options
+		.append("button")
+		.text("Expand")
+		.on("click", () => {
+			container
+				.style("position", "fixed")
+				.style("top", 0)
+				.style("left", 0)
+				.style("width", "100%")
+				.style("height", "100%");
+
+			refreshNode.style("display", "flex");
+		});
 	const confirmationDialog = container
 		.append("div")
 		.attr("class", "confirm")
