@@ -69,19 +69,11 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 	// Use the chrome.tabs.get method to retrieve information about the active tab.
 	chrome.tabs.get(tabId, (tab) => {
 		// Check if the tab's URL starts with "chrome://newtab/".
-		// if (tab.url && !tab.url.startsWith("chrome://newtab")) {
-		// 	currentUrl = tab.url;
-		// }
+		if (tab.url && !tab.url.startsWith("chrome://newtab")) {
+			changeCurrentUrl(tab.url);
+		}
 	});
 });
-
-// chrome.tabs.onCreated.addListener(function (tab) {
-// 	// Check if the tab has a "chrome://" URL (new tab page)
-// 	if (tab.url && tab.url.startsWith("chrome://")) {
-// 		// This tab is likely a new tab page
-// 		console.log("User opened a new tab page");
-// 	}
-// });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 	// Check if the URL changes to a "chrome://" URL (new tab page)

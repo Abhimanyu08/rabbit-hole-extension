@@ -22,40 +22,36 @@ document.addEventListener("DOMContentLoaded", async () => {
 		if (keyRegex.test(key)) {
 			const timeStamp = keyRegex.exec(key)[1];
 			let { traversalArray } = val;
+			console.log(key, traversalArray);
 			prepareGraph(container, traversalArray, timeStamp);
 		}
 	}
 });
 
 function renderNode(traversalArray) {
-	const circles = [];
 	const paths = [];
 
 	const urlToNode = new Map();
-	for (let { from, to } of traversalArray) {
-		if (!urlToNode.has(from)) {
-			const urlNode = { url: from, x: 300, y: 300, id: from };
-			urlToNode.set(from, urlNode);
-			circles.push(urlNode);
-		}
-		if (!urlToNode.has(to)) {
-			const urlNode = { url: to, x: 300, y: 300, id: to };
-			urlToNode.set(to, urlNode);
-			circles.push(urlNode);
-		}
 
+	function addOrModifyUrl(url) {
+		if (!urlToNode.has(url)) {
+			const urlNode = { url: url, x: 300, y: 300, id: url, count: 1 };
+			urlToNode.set(url, urlNode);
+		} else {
+			const urlNode = urlToNode.get(url);
+			urlToNode.set(url, { ...urlNode, count: urlNode.count + 1 });
+		}
+	}
+	for (let { from, to } of traversalArray) {
+		addOrModifyUrl(from);
+		addOrModifyUrl(to);
 		paths.push({
 			source: from,
 			target: to,
 			// id: from,
 		});
-
-		// if (node.children) {
-		// 	node.children.map((child) => {
-		// 		renderNode(child );
-		// 	});
-		// }
 	}
+	const circles = Array.from(urlToNode.values());
 	return [circles, paths];
 }
 
@@ -197,7 +193,7 @@ function prepareNodes(svg, circles) {
 		.style("font-weight", "400");
 	const circleElems = labelAndNodeG
 		.append("circle")
-		.attr("r", 5)
+		.attr("r", (d) => 5 * d.count)
 		.attr("fill", "cornflowerblue");
 
 	return [labelAndNodeG, circleElems, labels];

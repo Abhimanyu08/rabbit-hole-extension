@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	const label = document.getElementsByTagName("label").item(0);
 
 	chrome.storage.session.get("traversalTimeStamp", function (data) {
-		if (data) {
+		console.log(data);
+		if (Object.hasOwn(data, "traversalTimeStamp")) {
 			label.textContent = "Stop Digging";
 			inputEl.checked = true;
 			return;
