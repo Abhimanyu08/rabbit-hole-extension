@@ -145,7 +145,7 @@ function prepareGraph(container, traversalArray, timeStamp) {
 		)
 		.force("x", d3.forceX(svgWidth / 2))
 		.force("y", d3.forceY(svgHeight / 2))
-		.force("collide", d3.forceCollide(20))
+		.force("collide", d3.forceCollide(40))
 		.force("center", d3.forceCenter(svgWidth / 2, svgHeight / 2));
 
 	svg.call(d3.zoom().scaleExtent(transformScale).on("zoom", zoomed));
@@ -229,7 +229,7 @@ function prepareNodes(svg, circles) {
 		.style("font-weight", "400");
 	const circleElems = labelAndNodeG
 		.append("circle")
-		.attr("r", (d) => 5 * d.count)
+		.attr("r", (d) => Math.min(5 * d.count, 40))
 		.attr("fill", "cornflowerblue");
 
 	return [labelAndNodeG, circleElems, labels];
