@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 			}
 		});
 	});
-	console.log(data);
 
 	const container = d3.select("#container");
 
@@ -22,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		const keyRegex = /traversal-(\d+)/;
 		if (keyRegex.test(key)) {
 			const timeStamp = keyRegex.exec(key)[1];
-			const traversalArray = JSON.parse(val);
+			let { traversalArray } = val;
 			prepareGraph(container, traversalArray, timeStamp);
 		}
 	}
@@ -34,7 +33,6 @@ function renderNode(traversalArray) {
 
 	const urlToNode = new Map();
 	for (let { from, to } of traversalArray) {
-		console.log(from, to);
 		if (!urlToNode.has(from)) {
 			const urlNode = { url: from, x: 300, y: 300, id: from };
 			urlToNode.set(from, urlNode);
