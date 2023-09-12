@@ -55,10 +55,46 @@ function renderNode(traversalArray) {
 	return [circles, paths];
 }
 
+function addTimeStampDiv(container, timeStamp) {
+	container
+		.append("div")
+		.attr("class", "info")
+		.text(formatTimestamp(timeStamp));
+}
+
+function addOptionsDiv(container, timeStamp) {
+	const options = container.append("div").attr("class", "options");
+	options.append("button").text("Expand");
+	const confirmationDialog = container
+		.append("div")
+		.attr("class", "confirm")
+		.style("visibility", "hidden");
+	options
+		.append("button")
+		.text("Delete")
+		.on("click", () => {
+			confirmationDialog.style("visibility", "visible");
+		});
+	confirmationDialog
+		.append("button")
+		.text("Confirm")
+		.on("click", () => {
+			chrome.storage.local.remove(`traversal-${timeStamp}`);
+			container.style("display", "none");
+		});
+	confirmationDialog
+		.append("button")
+		.text("Cancel")
+		.on("click", () => {
+			confirmationDialog.style("visibility", "hidden");
+		});
+}
+
 function prepareGraph(container, traversalArray, timeStamp) {
 	const div = container.append("div");
 
-	div.append("div").attr("class", "info").text(formatTimestamp(timeStamp));
+	addTimeStampDiv(div, timeStamp);
+	addOptionsDiv(div, timeStamp);
 
 	const svg = div.append("svg");
 	const svgElement = svg.node();

@@ -35,13 +35,48 @@
 .info {
 	display: flex;
 	position: absolute;
-	top: 0;
-	left: 0;
+	bottom: 0px;
+	left: 0px;
 	width: fit-content;
 	height: fit-content;
 	padding: 4px;
 	border: 1px solid rgb(107 114 128);
-	border-left-width: 0;
-	border-top-width: 0;
 	color: white;
+	border-top-right-radius: 0.375rem;
+}
+
+.options {
+	display: flex;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: fit-content;
+	height: fit-content;
+	padding: 4px;
+	color: white;
+	gap: 8px;
+}
+
+button {
+	border: 1px solid rgb(107 114 128);
+	background-color: black;
+	color: white;
+	border-radius: 0.375rem;
+}
+button:hover {
+	background-color: rgb(107 114 128);
+}
+button:active {
+	scale: 0.95;
+}
+
+.confirm {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
 }
