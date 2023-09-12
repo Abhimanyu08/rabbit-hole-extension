@@ -82,7 +82,9 @@ function addOptionsDiv(container, timeStamp) {
 				.style("top", 0)
 				.style("left", 0)
 				.style("width", "100%")
-				.style("height", "100%");
+				.style("height", "100%")
+				.style("z-index", 100)
+				.style("background-color", "black");
 
 			refreshNode.style("display", "flex");
 		});
