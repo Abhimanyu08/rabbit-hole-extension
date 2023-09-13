@@ -20,16 +20,17 @@
 
 Now,
 
-_Every breath you take_
+_Every link you click_
 
-_And every move you make_
+_Every site you frolick_
 
-_Every bond you break_
+_Every tab you change_
 
-_Every step you take, I'll be watching you_
+_Every move you make, I'll be watching you_ -
+[The Police](https://open.spotify.com/track/0UdMtBHk8eThL3xcuSXQFi?autoplay=true)
 
-Just kidding, this extension will just watch for url changes and tab switches. A
-"rabbit hole session" ends when you uncheck that little box.
+This extension will watch for url changes and tab switches. A "rabbit hole
+session" ends when you uncheck that little box.
 
 3. At any point in time, you can press `Ctrl-H` or navigate to
    `chrome://history` page. This page will show all your "rabbit hole sessions"
@@ -51,25 +52,25 @@ Each grid cells corresponds to one "rabbit hole session".
 ### Future To-dos:
 
 1. **Kinds of links**:
-   
+
 -   Redirects (solid blue line)
 -   Tab switch (dotted line)
 -   Go to new tab or press home button and search something (dotted red line or
     no link at all?)
 
 2. **Continue the same session**:
-   
-   Right now a session starts and ends when you check
-and uncheck that little box. There's no way to continue a rabbit hole session
-in the future.
 
-4. **Add info**:
-   
-   Give the user ability to
-[add some small note to each node or link between nodes](https://joodaloop.com/small-boxes/).
+    Right now a session starts and ends when you check and uncheck that little
+    box. There's no way to continue a rabbit hole session in the future.
 
-6. **Share rabbit hole sessions**:
-   
+3. **Add info**:
+
+    Give the user ability to
+    [add some small note to each node or link between nodes](https://joodaloop.com/small-boxes/).
+
+4. **Share rabbit hole sessions**:
+
     Share your session through a public url
 
-8. **Steal ideas from [Tyler angert](https://tyler.cafe/internet-research-tools)**
+5. **Steal ideas from
+   [Tyler angert](https://tyler.cafe/internet-research-tools)**
