@@ -4,6 +4,11 @@ const opacityScale = d3.scaleLinear(transformScale, [0.2, 1]);
 document.addEventListener("DOMContentLoaded", async (e) => {
 	let data = await chrome.storage.local.get(null);
 	const container = d3.select("#container");
+	container.on("keydown", (e) => {
+		if (e.key === "Escape") {
+			refresh();
+		}
+	});
 
 	for (let [key, val] of Object.entries(data)) {
 		const keyRegex = /traversal-(\d+)/;
@@ -69,7 +74,7 @@ function addOptionsDiv(container, key, name) {
 		.style("width", "300px")
 		.style("justify-content", "flex-end");
 
-	refreshNode.append("p").text("Press Esc to minimize");
+	refreshNode.append("p").text("Press Esc or refresh to minimize");
 	const nameInputDialog = container
 		.append("div")
 		.attr("class", "dialog")
@@ -87,6 +92,12 @@ function addOptionsDiv(container, key, name) {
 
 				refresh(key);
 			}
+		});
+	nameInputDialog
+		.append("button")
+		.text("Cancel")
+		.on("click", () => {
+			nameInputDialog.style("visibility", "hidden");
 		});
 	options
 		.append("button")
@@ -107,6 +118,9 @@ function addOptionsDiv(container, key, name) {
 				.style("height", "100%")
 				.style("z-index", 100)
 				.style("background-color", "black");
+			if (key) {
+				chrome.storage.local.set({ scrollTo: key });
+			}
 
 			refreshNode.style("display", "flex");
 		});
@@ -143,11 +157,7 @@ function prepareGraph(container, traversalArray, key, name) {
 	const keyRegex = /traversal-(\d+)/;
 	const timeStamp = keyRegex.exec(key)[1];
 	const div = container.append("div").attr("id", key);
-	div.on("keydown", (e) => {
-		if (e.key === "Escape") {
-			refresh(key);
-		}
-	});
+
 	addTimeStampDiv(div, timeStamp);
 	addOptionsDiv(div, key, name);
 	addNameDiv(div, name);
@@ -331,9 +341,9 @@ function formatTimestamp(timestamp) {
 	return formattedDate;
 }
 
-async function refresh(timeStamp) {
-	if (timeStamp) {
-		await chrome.storage.local.set({ scrollTo: timeStamp });
+async function refresh(key) {
+	if (key) {
+		await chrome.storage.local.set({ scrollTo: key });
 	}
 	chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 		if (tabs.length > 0) {
