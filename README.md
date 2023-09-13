@@ -42,3 +42,28 @@ Each grid cells corresponds to one "rabbit hole session".
 4. You can name, expand or delete any given session.
 
 ![](expanded-session.png)
+
+5. You can simply use the browser's sweet find feature (by pressing `Ctrl-F`) to
+   search through names and links on this page.
+
+6. The nodes and url text open that link in a new tab on click.
+
+Future To-dos:
+
+**Kinds of links**:
+
+-   Redirects (solid blue line)
+-   Tab switch (dotted line)
+-   Go to new tab or press home button and search something (dotted red line or
+    no link at all?)
+
+**Continue the same session**: Right now a session starts and end when you check
+and uncheck that little box. There's no way to continue the rabbit hole session
+in the future.
+
+**Add info**: Give the user ability to
+[add some small note to each node or link between nodes](https://joodaloop.com/small-boxes/).
+
+**Share rabbit hole sessions**: Share your session through a public url
+
+**Steal ideas from [Tyler angert](https://tyler.cafe/internet-research-tools)**
