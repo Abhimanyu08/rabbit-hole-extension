@@ -3,24 +3,22 @@ const transformScale = [1, 10];
 const opacityScale = d3.scaleLinear(transformScale, [0.2, 1]);
 const line = d3.line();
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", async (e) => {
 	let data = await chrome.storage.local.get(null);
 	const container = d3.select("#container");
-
-	container.on("keydown", (e) => {
-		if (e.key === "Escape") {
-			refresh();
-		}
-	});
 
 	for (let [key, val] of Object.entries(data)) {
 		const keyRegex = /traversal-(\d+)/;
 		if (keyRegex.test(key)) {
-			const timeStamp = keyRegex.exec(key)[1];
 			let { traversalArray, name } = val;
-			prepareGraph(container, traversalArray, timeStamp, name);
+			prepareGraph(container, traversalArray, key, name);
 		}
 	}
+
+	let scrollTo = (await chrome.storage.local.get("scrollTo")).scrollTo;
+	const target = d3.select(`#${scrollTo}`);
+	target.node().scrollIntoView();
+	chrome.storage.local.remove("scrollTo");
 });
 
 function renderNode(traversalArray) {
@@ -57,7 +55,7 @@ function addTimeStampDiv(container, timeStamp) {
 		.text(formatTimestamp(timeStamp));
 }
 
-function addOptionsDiv(container, timeStamp, name) {
+function addOptionsDiv(container, key, name) {
 	const options = container.append("div").attr("class", "options");
 
 	const refreshNode = container
@@ -70,7 +68,7 @@ function addOptionsDiv(container, timeStamp, name) {
 		.style("width", "300px")
 		.style("justify-content", "flex-end");
 
-	refreshNode.append("p").text("Press Esc or refresh to minimize");
+	refreshNode.append("p").text("Press Esc to minimize");
 	const nameInputDialog = container
 		.append("div")
 		.attr("class", "dialog")
@@ -81,13 +79,12 @@ function addOptionsDiv(container, timeStamp, name) {
 		.attr("placeholder", "Type a name and hit Enter")
 		.on("keydown", async (e) => {
 			if (e.key === "Enter") {
-				const key = `traversal-${timeStamp}`;
 				const data = (await chrome.storage.local.get(key))[key];
 				chrome.storage.local.set({
 					[key]: { ...data, name: e.target.value },
 				});
 
-				refresh();
+				refresh(key);
 			}
 		});
 	options
@@ -126,7 +123,7 @@ function addOptionsDiv(container, timeStamp, name) {
 		.append("button")
 		.text("Confirm")
 		.on("click", () => {
-			chrome.storage.local.remove(`traversal-${timeStamp}`);
+			chrome.storage.local.remove(key);
 			container.style("display", "none");
 		});
 	confirmationDialog
@@ -138,14 +135,20 @@ function addOptionsDiv(container, timeStamp, name) {
 }
 
 function addNameDiv(container, name) {
-	container.append("div").attr("class", "name").text(name);
+	if (name) container.append("div").attr("class", "name").text(name);
 }
 
-function prepareGraph(container, traversalArray, timeStamp, name) {
-	const div = container.append("div");
-
+function prepareGraph(container, traversalArray, key, name) {
+	const keyRegex = /traversal-(\d+)/;
+	const timeStamp = keyRegex.exec(key)[1];
+	const div = container.append("div").attr("id", key);
+	container.on("keydown", (e) => {
+		if (e.key === "Escape") {
+			refresh(key);
+		}
+	});
 	addTimeStampDiv(div, timeStamp);
-	addOptionsDiv(div, timeStamp, name);
+	addOptionsDiv(div, key, name);
 	addNameDiv(div, name);
 
 	const svg = div.append("svg");
@@ -327,7 +330,10 @@ function formatTimestamp(timestamp) {
 	return formattedDate;
 }
 
-function refresh() {
+async function refresh(timeStamp) {
+	if (timeStamp) {
+		await chrome.storage.local.set({ scrollTo: timeStamp });
+	}
 	chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 		if (tabs.length > 0) {
 			chrome.tabs.reload(tabs[0].id);
