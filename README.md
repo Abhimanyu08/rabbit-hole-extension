@@ -20,15 +20,16 @@
 
 Now,
 
-> Every breath you take
+_Every breath you take_
 
-> And every move you make
+_And every move you make_
 
-> Every bond you break
+_Every bond you break_
 
-> Every step you take, I'll be watching you
+_Every step you take, I'll be watching you_
 
-Just kidding, this extension will just watch for url changes and tab switches.
+Just kidding, this extension will just watch for url changes and tab switches. A
+"rabbit hole session" ends when you uncheck that little box.
 
 3. At any point in time, you can press `Ctrl-H` or navigate to
    `chrome://history` page. This page will show all your "rabbit hole sessions"
@@ -36,8 +37,8 @@ Just kidding, this extension will just watch for url changes and tab switches.
 
 ![](history-page.png)
 
-Each grid cells corresponds to one rabbit hole session
+Each grid cells corresponds to one "rabbit hole session".
 
-4. You can name, expand or delete each one of your sessions.
+4. You can name, expand or delete any given session.
 
 ![](expanded-session.png)
