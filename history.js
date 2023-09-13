@@ -5,25 +5,15 @@ const line = d3.line();
 const urls = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
-	let data = await new Promise((resolve, reject) => {
-		chrome.storage.local.get(null, (result) => {
-			if (chrome.runtime.lastError) {
-				reject(chrome.runtime.lastError);
-			} else {
-				resolve(result);
-			}
-		});
-	});
-
+	let data = await chrome.storage.local.get(null);
 	const container = d3.select("#container");
 
 	for (let [key, val] of Object.entries(data)) {
 		const keyRegex = /traversal-(\d+)/;
 		if (keyRegex.test(key)) {
 			const timeStamp = keyRegex.exec(key)[1];
-			let { traversalArray } = val;
-			console.log(key, traversalArray);
-			prepareGraph(container, traversalArray, timeStamp);
+			let { traversalArray, name } = val;
+			prepareGraph(container, traversalArray, timeStamp, name);
 		}
 	}
 });
@@ -62,7 +52,7 @@ function addTimeStampDiv(container, timeStamp) {
 		.text(formatTimestamp(timeStamp));
 }
 
-function addOptionsDiv(container, timeStamp) {
+function addOptionsDiv(container, timeStamp, name) {
 	const options = container.append("div").attr("class", "options");
 
 	const refreshNode = container
@@ -73,6 +63,40 @@ function addOptionsDiv(container, timeStamp) {
 		.style("z-index", "100")
 		.style("background-color", "black")
 		.text("Refresh to minimize");
+
+	const nameInputDialog = container
+		.append("div")
+		.attr("class", "dialog")
+		.style("visibility", "hidden");
+
+	nameInputDialog
+		.append("input")
+		.attr("placeholder", "Type a name and hit Enter")
+		.on("keydown", async (e) => {
+			if (e.key === "Enter") {
+				const key = `traversal-${timeStamp}`;
+				const data = (await chrome.storage.local.get(key))[key];
+				chrome.storage.local.set({
+					[key]: { ...data, name: e.target.value },
+				});
+
+				chrome.tabs.query(
+					{ active: true, currentWindow: true },
+					function (tabs) {
+						if (tabs.length > 0) {
+							chrome.tabs.reload(tabs[0].id);
+						}
+					}
+				);
+			}
+		});
+	options
+		.append("button")
+		.text(name ? "Edit Name" : "Add a name")
+		.on("click", () => {
+			nameInputDialog.style("visibility", "visible");
+		});
+
 	options
 		.append("button")
 		.text("Expand")
@@ -90,7 +114,7 @@ function addOptionsDiv(container, timeStamp) {
 		});
 	const confirmationDialog = container
 		.append("div")
-		.attr("class", "confirm")
+		.attr("class", "dialog")
 		.style("visibility", "hidden");
 	options
 		.append("button")
@@ -113,11 +137,16 @@ function addOptionsDiv(container, timeStamp) {
 		});
 }
 
-function prepareGraph(container, traversalArray, timeStamp) {
+function addNameDiv(container, name) {
+	container.append("div").attr("class", "name").text(name);
+}
+
+function prepareGraph(container, traversalArray, timeStamp, name) {
 	const div = container.append("div");
 
 	addTimeStampDiv(div, timeStamp);
-	addOptionsDiv(div, timeStamp);
+	addOptionsDiv(div, timeStamp, name);
+	addNameDiv(div, name);
 
 	const svg = div.append("svg");
 	const svgElement = svg.node();
