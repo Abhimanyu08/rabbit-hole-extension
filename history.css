@@ -19,7 +19,7 @@
 	background-color: black;
 	min-height: 100vh;
 	display: grid;
-	width: 100vw;
+	width: 100%;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	padding: 8px;
 	gap: 4px;

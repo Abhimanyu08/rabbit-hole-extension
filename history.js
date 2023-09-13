@@ -80,8 +80,9 @@ function addOptionsDiv(container, key, name) {
 		.attr("class", "dialog")
 		.style("visibility", "hidden");
 
-	nameInputDialog
+	const nameInput = nameInputDialog
 		.append("input")
+		.attr("id", `input-${key}`)
 		.attr("placeholder", "Type a name and hit Enter")
 		.on("keydown", async (e) => {
 			if (e.key === "Enter") {
@@ -104,6 +105,7 @@ function addOptionsDiv(container, key, name) {
 		.text(name ? "Edit Name" : "Add a name")
 		.on("click", () => {
 			nameInputDialog.style("visibility", "visible");
+			d3.select(`#input-${key}`).node().focus();
 		});
 
 	options
