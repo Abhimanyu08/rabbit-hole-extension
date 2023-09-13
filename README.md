@@ -51,21 +51,25 @@ Each grid cells corresponds to one "rabbit hole session".
 ### Future To-dos:
 
 1. **Kinds of links**:
+   
 -   Redirects (solid blue line)
 -   Tab switch (dotted line)
 -   Go to new tab or press home button and search something (dotted red line or
     no link at all?)
 
 2. **Continue the same session**:
-   Right now a session starts and end when you check
-and uncheck that little box. There's no way to continue the rabbit hole session
+   
+   Right now a session starts and ends when you check
+and uncheck that little box. There's no way to continue a rabbit hole session
 in the future.
 
-3. **Add info**:
+4. **Add info**:
+   
    Give the user ability to
 [add some small note to each node or link between nodes](https://joodaloop.com/small-boxes/).
 
-4. **Share rabbit hole sessions**:
+6. **Share rabbit hole sessions**:
+   
     Share your session through a public url
 
-5. **Steal ideas from [Tyler angert](https://tyler.cafe/internet-research-tools)**
+8. **Steal ideas from [Tyler angert](https://tyler.cafe/internet-research-tools)**
