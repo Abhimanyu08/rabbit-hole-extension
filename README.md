@@ -18,11 +18,26 @@
 
 2. Keep browsing as your normally do, diving in rabbit holes and having fun.
 
-> Every breath you take And every move you make Every bond you break Every step
-> you take I'll be watching you
+Now,
+
+> Every breath you take
+
+> And every move you make
+
+> Every bond you break
+
+> Every step you take, I'll be watching you
 
 Just kidding, this extension will just watch for url changes and tab switches.
 
 3. At any point in time, you can press `Ctrl-H` or navigate to
    `chrome://history` page. This page will show all your "rabbit hole sessions"
-   in a nice graphical view.
+   in a nice graphical view. Mine looks like this rn.
+
+![](history-page.png)
+
+Each grid cells corresponds to one rabbit hole session
+
+4. You can name, expand or delete each one of your sessions.
+
+![](expanded-session.png)
