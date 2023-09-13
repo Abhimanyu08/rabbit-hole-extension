@@ -2,11 +2,16 @@ const scale = d3.scaleLinear([0, 1], [100, 600]);
 const transformScale = [1, 10];
 const opacityScale = d3.scaleLinear(transformScale, [0.2, 1]);
 const line = d3.line();
-const urls = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
 	let data = await chrome.storage.local.get(null);
 	const container = d3.select("#container");
+
+	container.on("keydown", (e) => {
+		if (e.key === "Escape") {
+			refresh();
+		}
+	});
 
 	for (let [key, val] of Object.entries(data)) {
 		const keyRegex = /traversal-(\d+)/;
@@ -62,8 +67,10 @@ function addOptionsDiv(container, timeStamp, name) {
 		.style("padding", "10px")
 		.style("z-index", "100")
 		.style("background-color", "black")
-		.text("Refresh to minimize");
+		.style("width", "300px")
+		.style("justify-content", "flex-end");
 
+	refreshNode.append("p").text("Press Esc or refresh to minimize");
 	const nameInputDialog = container
 		.append("div")
 		.attr("class", "dialog")
@@ -80,14 +87,7 @@ function addOptionsDiv(container, timeStamp, name) {
 					[key]: { ...data, name: e.target.value },
 				});
 
-				chrome.tabs.query(
-					{ active: true, currentWindow: true },
-					function (tabs) {
-						if (tabs.length > 0) {
-							chrome.tabs.reload(tabs[0].id);
-						}
-					}
-				);
+				refresh();
 			}
 		});
 	options
@@ -327,4 +327,11 @@ function formatTimestamp(timestamp) {
 	return formattedDate;
 }
 
+function refresh() {
+	chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+		if (tabs.length > 0) {
+			chrome.tabs.reload(tabs[0].id);
+		}
+	});
+}
 // Example usage:
