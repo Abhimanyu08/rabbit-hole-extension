@@ -1,7 +1,5 @@
-const scale = d3.scaleLinear([0, 1], [100, 600]);
 const transformScale = [1, 10];
 const opacityScale = d3.scaleLinear(transformScale, [0.2, 1]);
-const line = d3.line();
 
 document.addEventListener("DOMContentLoaded", async (e) => {
 	let data = await chrome.storage.local.get(null);
@@ -16,9 +14,12 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 	}
 
 	let scrollTo = (await chrome.storage.local.get("scrollTo")).scrollTo;
-	const target = d3.select(`#${scrollTo}`);
-	target.node().scrollIntoView();
-	chrome.storage.local.remove("scrollTo");
+	if (scrollTo) {
+		console.log(scrollTo);
+		const target = d3.select(`#${scrollTo}`);
+		target.node().scrollIntoView();
+		chrome.storage.local.remove("scrollTo");
+	}
 });
 
 function renderNode(traversalArray) {
@@ -142,7 +143,7 @@ function prepareGraph(container, traversalArray, key, name) {
 	const keyRegex = /traversal-(\d+)/;
 	const timeStamp = keyRegex.exec(key)[1];
 	const div = container.append("div").attr("id", key);
-	container.on("keydown", (e) => {
+	div.on("keydown", (e) => {
 		if (e.key === "Escape") {
 			refresh(key);
 		}
