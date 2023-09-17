@@ -178,6 +178,9 @@ function prepareGraph(container, traversalArray, key, name) {
 	nodeAndLabels
 		.on("click", function (_, d) {
 			const url = d.url;
+			chrome.storage.session.set({
+				traversalTimeStamp: key,
+			});
 			chrome.tabs.create({ url });
 		})
 		.on("mouseover", function (_, d) {
