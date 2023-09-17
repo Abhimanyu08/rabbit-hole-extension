@@ -47,7 +47,8 @@ Each grid cells corresponds to one "rabbit hole session".
 5. You can simply use the browser's sweet find feature (by pressing `Ctrl-F`) to
    search through names and links on this page.
 
-6. The nodes and url text open that link in a new tab on click.
+6. The nodes and url text open that link in a new tab on click and continue the
+   same rabbit hole session.
 
 ### Future To-dos:
 
