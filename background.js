@@ -25,9 +25,10 @@ async function getPreviousData(traversalTimeStamp) {
 	return null;
 }
 
-function setTraversalData(traversalTimeStamp, traversalArray, currentUrl) {
+function setTraversalData(traversalTimeStamp, traversalArray, currentUrl, previousData) {
 	chrome.storage.local.set({
 		[traversalTimeStamp]: {
+			...previousData,
 			traversalArray,
 			currentUrl,
 		},
@@ -41,11 +42,11 @@ async function changeCurrentUrl(url) {
 
 	if (previousData) {
 		const { traversalArray } = previousData;
-		setTraversalData(traversalTimeStamp, traversalArray, url);
+		setTraversalData(traversalTimeStamp, traversalArray, url, previousData);
 		return;
 	}
 
-	setTraversalData(traversalTimeStamp, [], url);
+	setTraversalData(traversalTimeStamp, [], url, previousData);
 }
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
@@ -102,7 +103,7 @@ async function updateGraph(url) {
 
 	const previousData = await getPreviousData(traversalTimeStamp);
 	if (!previousData) {
-		setTraversalData(traversalTimeStamp, [{ from: "root", to: url }], url);
+		setTraversalData(traversalTimeStamp, [{ from: "root", to: url }], url, previousData);
 		return;
 	}
 
@@ -112,7 +113,7 @@ async function updateGraph(url) {
 	const previousArray = traversalArray;
 
 	previousArray.push({ from: currentUrl || "root", to: url });
-	setTraversalData(traversalTimeStamp, previousArray, url);
+	setTraversalData(traversalTimeStamp, previousArray, url, previousData);
 }
 
 function reset() {
